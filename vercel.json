@@ -1,1 +1,6 @@
-{}
+{
+  "rewrites": [
+    { "source": "/api/tuvi", "destination": "/api/tuvi.py" },
+    { "source": "/api/interpret", "destination": "/api/interpret.py" }
+  ]
+}

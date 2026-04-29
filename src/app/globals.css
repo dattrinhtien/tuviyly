@@ -1,40 +1,52 @@
 @import "tailwindcss";
 
-:root {
-  --background: #fdfaf5;
-  --foreground: #2d241e;
-  --star-main: #8b0000;
-  --star-good: #b45309;
-  --star-bad: #4b5563;
-  --border-color: #d1cfc7;
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+
+  --color-medical-bg: #fdfaf3; /* Parchment like */
+  --color-medical-primary: #8b0000; /* Deep Crimson */
+  --color-medical-secondary: #c5a059; /* Gold */
+  --color-medical-text: #2c2c2c;
+  --color-star-main: #8b0000;
+  --color-star-good: #1a5f1a; /* Darker green for medical health */
+  --color-star-bad: #b22222; /* Firebrick red for diseases */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-star-main: var(--star-main);
-  --color-star-good: var(--star-good);
-  --color-star-bad: var(--star-bad);
-  --color-border-chart: var(--border-color);
+:root {
+  --background: var(--color-medical-bg);
+  --foreground: var(--color-medical-text);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Responsive Scaling for the Chart */
-.chart-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  position: relative;
-  container-type: inline-size;
+.medical-card {
+  @apply bg-white border border-medical-secondary/20 shadow-lg rounded-xl overflow-hidden;
+  box-shadow: 0 10px 30px -15px rgba(139, 0, 0, 0.1);
 }
 
-@container (max-width: 600px) {
-  .star-text {
-    font-size: 8px;
-  }
+.medical-gradient {
+  background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+}
+
+.academic-border {
+  @apply border-double border-4 border-medical-secondary/40;
+}
+
+/* Custom scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5a059;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8b0000;
 }

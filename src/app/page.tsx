@@ -139,10 +139,14 @@ export default function Home() {
         
         {/* Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
-          <div className="bg-white p-5 rounded shadow-sm border border-gray-300">
-            <h1 className="text-xl font-bold text-[#8b0000] border-b-2 border-[#8b0000] mb-4 pb-1 uppercase italic">Tử Vi Số Mệnh</h1>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input className="w-full border border-gray-300 p-2 text-sm rounded outline-none" type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Họ tên" />
+          <div className="medical-card p-6">
+            <h1 className="text-2xl font-serif font-bold text-medical-primary border-b-2 border-medical-secondary mb-6 pb-2 uppercase tracking-wide">Tử Vi Y Học</h1>
+            <p className="text-[11px] text-gray-500 mb-6 italic leading-relaxed">Chuyên sâu phân tích Thể chất, Bệnh tật & Thọ yểu bằng AI Gemini.</p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-gray-400 ml-1">Họ tên</label>
+                <input className="w-full border border-gray-200 p-2.5 text-sm rounded-lg outline-none focus:border-medical-primary transition-colors" type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Họ tên" />
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <select className="border border-gray-300 p-2 text-sm rounded bg-white" name="calendar_type" value={formData.calendar_type} onChange={handleChange}>
                   <option value="solar">Dương Lịch</option>
@@ -161,8 +165,8 @@ export default function Home() {
               <select className="w-full border border-gray-300 p-2 text-sm rounded bg-white" name="birth_hour" value={formData.birth_hour} onChange={handleChange}>
                 {HOUR_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-              <button type="submit" disabled={loading} className="w-full bg-[#8b0000] text-white py-2 font-bold uppercase hover:bg-black transition-colors shadow-sm disabled:bg-gray-400">
-                {loading ? 'Đang an sao...' : 'Lập Lá Số'}
+              <button type="submit" disabled={loading} className="w-full medical-gradient text-white py-3 rounded-lg font-bold uppercase hover:opacity-90 transition-all shadow-md disabled:bg-gray-400 mt-4 tracking-widest text-sm">
+                {loading ? 'Đang phân tích...' : 'Lập Lá Số & Xem Hạn'}
               </button>
             </form>
             {error && <div className="mt-3 p-2 bg-red-50 text-red-600 text-xs border border-red-200">{error}</div>}
@@ -188,7 +192,7 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="relative z-10 w-full text-center flex flex-col h-full justify-center">
-                              <h2 className="text-sm sm:text-lg md:text-3xl font-serif font-bold text-star-main mb-1 sm:mb-2 md:mb-6 uppercase">Lá Số Tử Vi</h2>
+                              <h2 className="text-sm sm:text-lg md:text-3xl font-serif font-bold text-medical-primary mb-1 sm:mb-2 md:mb-6 uppercase tracking-tighter">Lá Số Tử Vi Y Học</h2>
                               <div className="grid grid-cols-2 gap-x-1 sm:gap-x-4 gap-y-0.5 sm:gap-y-1 text-left text-[7px] sm:text-[10px] md:text-[13px] border-y py-1 sm:py-4 border-gray-100">
                                 <p className="truncate"><span className="font-bold opacity-70 w-8 sm:w-16 md:w-20 inline-block">Họ tên:</span> {result.thien_ban.ten}</p>
                                 <p className="truncate"><span className="font-bold opacity-70 w-8 sm:w-16 md:w-20 inline-block">Giới:</span> {result.thien_ban.gioi_tinh === 'nam' ? 'Nam' : 'Nữ'}</p>
@@ -239,21 +243,30 @@ export default function Home() {
                 )}
 
                 {(aiLoading || interpretation) && (
-                  <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center gap-3 mb-6 border-b-2 border-[#8b0000] pb-2">
-                      <div className="w-10 h-10 bg-[#8b0000] rounded-full flex items-center justify-center shadow-lg text-white font-bold">AI</div>
-                      <h3 className="text-2xl font-serif font-bold text-[#8b0000]">Luận Giải Từ Đại Sư AI</h3>
+                  <div className="medical-card p-6 sm:p-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="flex items-center gap-4 mb-8 border-b border-medical-secondary/30 pb-4">
+                      <div className="w-12 h-12 medical-gradient rounded-full flex items-center justify-center shadow-lg text-white font-bold text-xl font-serif">AI</div>
+                      <div>
+                        <h3 className="text-2xl font-serif font-bold text-medical-primary">Luận Giải Chuyên Sâu Y Học</h3>
+                        <p className="text-xs text-gray-400 uppercase tracking-widest">Phân tích bởi Trí Tuệ Nhân Tạo Gemini</p>
+                      </div>
                     </div>
                     
                     {aiLoading ? (
                       <div className="flex flex-col items-center py-20 text-gray-400 italic">
-                        <div className="w-12 h-12 border-4 border-[#8b0000] border-t-transparent rounded-full animate-spin mb-4"></div>
-                        <p className="text-lg">Đại sư AI đang chiêm nghiệm lá số...</p>
-                        <p className="text-sm mt-2">Quá trình này có thể mất 15-30 giây.</p>
+                        <div className="w-16 h-16 border-4 border-medical-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+                        <p className="text-xl font-serif">Đại sư AI đang chiêm nghiệm căn cơ...</p>
+                        <p className="text-sm mt-2 opacity-70">Phân tích bệnh lý và thọ hạn qua 108 vì tinh tú...</p>
                       </div>
                     ) : (
-                      <div className="max-w-none text-gray-800 leading-relaxed whitespace-pre-wrap font-serif text-lg space-y-4">
+                      <div className="prose prose-stone max-w-none text-gray-800 leading-relaxed whitespace-pre-wrap font-serif text-lg space-y-6">
                         {interpretation}
+                      </div>
+                    )}
+                    
+                    {!aiLoading && (
+                      <div className="mt-12 pt-6 border-t border-gray-100 text-[10px] text-gray-400 italic text-center uppercase tracking-widest">
+                        Lưu ý: Kết quả mang tính tham khảo học thuật, không thay thế tư vấn y khoa chuyên nghiệp.
                       </div>
                     )}
                   </div>
