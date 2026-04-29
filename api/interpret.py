@@ -163,19 +163,16 @@ Với mỗi nhóm:
   - yếu tố cứu giải, kéo dài, phục hồi
   - giai đoạn nào dễ khủng hoảng sức khỏe lớn
 
-6. ĐẠI HẠN
-- Xác định đại hạn hiện tại
-- Đánh giá vận sức khỏe của đại hạn hiện tại
-- Chỉ ra các đại hạn nổi bật về:
-  - bệnh nặng
-  - thương tích
-  - phẫu thuật
-  - suy kiệt
+6. ĐẠI HẠN (VÒNG ĐỜI TỪ 1 ĐẾN 90 TUỔI)
+- Phân tích toàn bộ các đại hạn 10 năm trong vòng đời (từ khi sinh ra đến tối đa 90 tuổi).
+- Đánh giá chi tiết vận trình sức khỏe, bệnh tật và thọ yểu cho từng chặng 10 năm.
+- Xác định rõ các đại hạn hung hiểm nhất về: sinh tử, bệnh nan y, tai nạn thảm khốc.
+- ĐẶC BIỆT: Với mỗi đại hạn được xác định là có rủi ro cao (bệnh nặng, tai nạn, hoặc sinh tử), bắt buộc phải truy tìm và chỉ đích danh NĂM NÀO là năm nguy hiểm nhất trong chặng đó (nêu rõ số tuổi và năm cụ thể).
 - Với mỗi đại hạn quan trọng, nêu:
-  - khoảng tuổi
-  - cung hạn
-  - sao nổi bật
-  - loại rủi ro chính
+  - Khoảng tuổi (ví dụ: 24-33)
+  - Cung hạn
+  - Các bộ sao chủ chốt (hung/cát)
+  - Loại rủi ro chính và mức độ nguy hại
 
 7. TIỂU HẠN / LƯU NIÊN TRỌNG TÂM
 Hôm nay là năm 2026.
