@@ -178,24 +178,41 @@ Cuối bài, cho điểm 10 về các mục:
 - Mốc thời gian hiện tại là tháng 4/2026. Hãy dùng mốc này để tính toán các hạn.
 """
 
-        # Danh sách các model ổn định để thử
-        models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro']
+        # Danh sách các model tiềm năng (sử dụng tên đầy đủ models/...)
+        models_to_try = ['models/gemini-1.5-flash', 'models/gemini-1.5-pro']
         
+        # Thử lấy danh sách model thực tế từ tài khoản (Auto-discovery)
+        try:
+            available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+            if available_models:
+                # Đưa các model khả dụng lên đầu danh sách thử nghiệm
+                for am in reversed(available_models):
+                    if am not in models_to_try:
+                        models_to_try.insert(0, am)
+        except Exception as e:
+            # Nếu không liệt kê được cũng không sao, sẽ dùng danh sách mặc định
+            pass
+
         errors = []
         for model_name in models_to_try:
             try:
-                # Sử dụng thư viện SDK chính thức
+                # Sử dụng thư viện SDK chính thức với tên model đầy đủ
                 model = genai.GenerativeModel(model_name)
                 response = model.generate_content(prompt_text)
                 
                 if response and response.text:
                     return {"success": True, "interpretation": response.text}
                 else:
-                    errors.append(f"{model_name}: No response text")
+                    errors.append(f"{model_name}: Không có phản hồi văn bản")
             except Exception as e:
-                errors.append(f"{model_name}: {str(e)}")
-                # Đợi một chút trước khi thử model tiếp theo để tránh rate limit liên tục
-                time.sleep(1)
+                err_str = str(e)
+                errors.append(f"{model_name}: {err_str}")
+                
+                # Nếu là lỗi hết hạn mức (429), đợi lâu hơn một chút
+                if "429" in err_str:
+                    time.sleep(3)
+                else:
+                    time.sleep(1)
                 continue
         
         combined_errors = " | ".join(errors)
