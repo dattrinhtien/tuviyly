@@ -173,13 +173,24 @@ Cuối bài, cho điểm 10 về các mục:
         if not GEMINI_API_KEY:
             return {"success": False, "error": "Thiếu Gemini API Key."}
 
-        # Danh sách các model ổn định
-        models = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash']
+        # Làm sạch API Key
+        api_key = GEMINI_API_KEY.strip()
+
+        # Danh sách các model và version tương ứng
+        # Thử v1 cho bản stable, v1beta cho bản mới nhất
+        model_configs = [
+            {"name": "gemini-1.5-flash", "version": "v1"},
+            {"name": "gemini-1.5-flash-latest", "version": "v1"},
+            {"name": "gemini-1.5-pro", "version": "v1"},
+            {"name": "gemini-1.5-pro-latest", "version": "v1"}
+        ]
         
-        last_error = ""
-        for model in models:
+        errors = []
+        for config in model_configs:
+            model_name = config["name"]
+            version = config["version"]
             try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
+                url = f"https://generativelanguage.googleapis.com/{version}/models/{model_name}:generateContent?key={api_key}"
                 payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
                 response = requests.post(url, json=payload, timeout=90)
                 
@@ -188,13 +199,18 @@ Cuối bài, cho điểm 10 về các mục:
                     interpretation = result['candidates'][0]['content']['parts'][0]['text']
                     return {"success": True, "interpretation": interpretation}
                 else:
-                    error_msg = response.json().get('error', {}).get('message', 'Unknown error')
-                    last_error = error_msg
+                    try:
+                        error_data = response.json()
+                        error_msg = error_data.get('error', {}).get('message', 'Unknown error')
+                    except:
+                        error_msg = f"HTTP {response.status_code}: {response.text[:100]}"
+                    errors.append(f"{model_name}: {error_msg}")
                     continue
             except Exception as e:
-                last_error = str(e)
+                errors.append(f"{model_name}: {str(e)}")
                 continue
         
-        return {"success": False, "error": f"AI đang bận: {last_error}"}
+        combined_errors = " | ".join(errors)
+        return {"success": False, "error": f"AI đang bận hoặc hết hạn mức. Chi tiết: {combined_errors}"}
     except Exception as e:
         return {"success": False, "error": str(e)}
