@@ -42,191 +42,70 @@ async def interpret_tuvi(input_data: InterpretInput):
         # Xây dựng thông tin các cung
         cung_info = "\n".join([f"Cung {v['chu_cung']} ({v['name']}): {', '.join(v['stars'])}" for k, v in cung_dict.items()])
         
-        # Thiết lập cấu hình chuyên biệt theo yêu cầu
+        # Thiết lập cấu hình
         generation_config = {
-            "temperature": 0.15,
-            "top_p": 0.85,
+            "temperature": 0.2, # Tăng nhẹ để tránh việc copy-paste lại prompt
+            "top_p": 0.9,
             "max_output_tokens": 10000,
         }
 
+        # SYSTEM_INSTRUCTIONS (Chỉ dẫn ngầm - AI không được in ra)
+        system_instruction = """
+        BẠN LÀ CHUYÊN GIA LUẬN GIẢI TỬ VI Y HỌC. 
+        NHIỆM VỤ: PHÂN TÍCH SỨC KHỎE, BỆNH TẬT, TAI NẠN VÀ THỌ MỆNH.
+        PHONG CÁCH: CHUYÊN LUẬN, CHẶT CHẼ, CÓ CĂN CỨ SAO/CUNG.
+        
+        QUY TẮC NGHIÊM NGẶT:
+        1. TUYỆT ĐỐI KHÔNG in lại các quy tắc, chỉ dẫn hay tiêu đề hướng dẫn trong phản hồi.
+        2. BẮT ĐẦU PHẢN HỒI trực tiếp bằng tiêu đề "PHÂN TÍCH LÁ SỐ TỬ VI - [TÊN ĐƯƠNG SỐ]".
+        3. KHÔNG chào hỏi, không xã giao, không dùng lời khen mở đầu.
+        4. Mọi kết luận phải dựa trên: Cung liên quan | Sao liên quan | Ý nghĩa suy ra | Mức độ.
+        5. KHÔNG bịa thêm dữ liệu không có trong lá số.
+        """
+
         prompt_text = f"""
-Bạn là chuyên gia luận giải Tử Vi theo hướng chuyên sâu về:
-- sức khỏe
-- thân thể
-- bệnh tật
-- tai nạn thương tích
-- phẫu thuật, huyết quang
-- xu hướng thọ yểu
-- đại hạn và tiểu hạn liên quan đến bệnh tật
+{system_instruction}
 
-Nhiệm vụ của bạn là phân tích lá số được cung cấp theo phong cách CHUYÊN LUẬN, CHẶT CHẼ, CÓ CĂN CỨ, KHÔNG VĂN CHƯƠNG KHOE MẼ.
-
-========================
-I. QUY TẮC BẮT BUỘC
-========================
-
-1. Chỉ được phép sử dụng dữ liệu lá số đã cung cấp trong đề bài.
-2. Không được bịa thêm sao, cung, bộ sao, hạn, tháng hoặc kết luận không có căn cứ.
-3. Nếu dữ liệu không đủ để kết luận, phải ghi rõ: "Không đủ dữ liệu để kết luận chắc hơn".
-4. Không được mở đầu bằng các câu xã giao như:
-   - "Tuyệt vời"
-   - "Dưới đây là"
-   - "Hy vọng"
-   - "Rất vui"
-   - "Một cuốn sách nhỏ"
-5. Không dùng giọng văn tâng bốc, huyền bí hóa hoặc kể chuyện lan man.
-6. Không kết luận như bác sĩ. Chỉ dùng các từ:
-   - xu hướng
-   - nguy cơ
-   - khả năng
-   - mức độ gợi ý
-7. Khi nói đến bệnh tật, phải phân loại rõ:
-   - bệnh bẩm sinh / nền tảng thể chất
-   - bệnh mãn tính / kéo dài
-   - bệnh cấp tính / bộc phát
-   - tai nạn / thương tích / huyết quang / phẫu thuật
-8. Mỗi nhận định bắt buộc phải theo mẫu:
-   - Cung liên quan:
-   - Sao liên quan:
-   - Bộ sao/tổ hợp:
-   - Ý nghĩa suy ra:
-   - Mức độ mạnh/yếu:
-9. Không được chỉ giải nghĩa sao chung chung như sách giáo khoa. Phải gắn vào lá số cụ thể này.
-10. Nếu có cát tinh cứu giải, phải nêu rõ yếu tố cứu giải và mức độ giảm hung.
-11. Nếu có xung đột giữa hung tinh và cát tinh, phải cân lực hai bên rồi mới kết luận.
-12. Không được lặp lại cùng một ý dưới nhiều cách diễn đạt khác nhau.
-
-========================
-II. DỮ LIỆU ĐƯƠNG SỐ
-========================
-
+---
+DỮ LIỆU ĐƯƠNG SỐ:
 - Họ tên: {thien_ban.get('ten')}
-- Năm sinh âm: {thien_ban.get('nam_am')}
-- Năm sinh dương: {thien_ban.get('nam_duong')}
-- Bản mệnh: {thien_ban.get('ban_menh')}
-- Cục: {thien_ban.get('cuc')}
-- Chủ mệnh: {thien_ban.get('menh_chu')}
-- Chủ thân: {thien_ban.get('than_chu')}
-- Tương quan sinh khắc: {thien_ban.get('sinh_khac')}
+- Năm sinh: {thien_ban.get('nam_am')} ({thien_ban.get('nam_duong')})
+- Bản mệnh: {thien_ban.get('ban_menh')} | Cục: {thien_ban.get('cuc')}
+- Chủ mệnh: {thien_ban.get('menh_chu')} | Chủ thân: {thien_ban.get('than_chu')}
+- Tương quan: {thien_ban.get('sinh_khac')}
 
-========================
-III. DỮ LIỆU CUNG VÀ SAO
-========================
-
+DỮ LIỆU CUNG VÀ SAO:
 {cung_info}
 
-========================
-IV. TRÌNH TỰ PHÂN TÍCH BẮT BUỘC
-========================
+---
+HÃY TRÌNH BÀY BÀI LUẬN GIẢI THEO CẤU TRÚC SAU (CHỈ IN RA PHẦN NÀY):
 
-Hãy trả lời đúng theo thứ tự sau:
+A. TỔNG QUAN NỀN THỂ CHẤT
+(Phân tích Mệnh/Thân/Tật/Phúc. Đánh giá lực lượng bẩm sinh, sao chủ sống/suy).
 
-1. TỔNG QUAN BẢN THỂ VÀ NỀN TẢNG THỂ CHẤT
-- Phân tích Mệnh, Thân, Tật Ách, Phúc Đức và các cung liên đới.
-- Đánh giá nền tảng thể lực bẩm sinh: khỏe / yếu / hao tổn / dễ bệnh / dễ phục hồi.
-- Nêu rõ sao nào chủ sức sống, sao nào chủ suy tổn.
+B. CÁC DẤU HIỆU THÂN THỂ VÀ BỘ PHẬN DỄ TỔN THƯƠNG
+(Chia theo nhóm: Đầu/Mặt, Tim/Tuần hoàn, Hô hấp, Tiêu hóa, Thận, Thần kinh, Xương khớp... Gắn cụ thể với sao/cung).
 
-2. THÂN THỂ VÀ NHÓM CƠ QUAN DỄ BỊ ẢNH HƯỞNG
-Chia theo nhóm:
-- đầu, mặt, mắt, tai, mũi, họng
-- tim mạch, huyết áp, tuần hoàn
-- hô hấp
-- tiêu hóa, gan mật, tỳ vị
-- thận, tiết niệu, sinh dục
-- thần kinh, tâm thần, mất ngủ
-- xương khớp, cột sống, gân cơ
-- da liễu, dị ứng
-- nội tiết, suy nhược, khí huyết
-Với mỗi nhóm:
-- chỉ nói khi có căn cứ từ sao/cung
-- nêu mức độ: thấp / vừa / cao / rất cao
+C. CÁC XU HƯỚNG BỆNH NỔI BẬT VÀ BỆNH MÃN TÍNH
+(Xác định các bệnh trọng tâm nhất của lá số).
 
-3. BỆNH TẬT BẨM SINH VÀ XU HƯỚNG BỆNH LÂU DÀI
-- Chỉ ra những xu hướng bệnh nổi bật nhất
-- Phân biệt cái nào là nền thể chất yếu, cái nào là bệnh dễ tái phát lâu dài
+D. TAI NẠN, THƯƠNG TÍCH, PHẪU THUẬT, HUYẾT QUANG
+(Phân tích các bộ sát tinh hội tụ và yếu tố cứu giải).
 
-4. NGUY CƠ TAI NẠN, THƯƠNG TÍCH, PHẪU THUẬT, HUYẾT QUANG
-- Tập trung vào các bộ sao sát tinh
-- Chỉ rõ nguy cơ thiên về:
-  - té ngã
-  - xe cộ
-  - dao kéo, mổ xẻ
-  - va chạm, thương tích
-  - huyết quang
-- Nếu có sao giải cứu thì nói rõ
+E. THỌ MỆNH VÀ YẾU TỐ TỔN THỌ
+(Đánh giá xu hướng trường/tổn thọ, các giai đoạn khủng hoảng lớn).
 
-5. THỌ MỆNH VÀ YẾU TỐ TỔN THỌ
-- Không được phán năm chết hoặc tuổi chết cụ thể
-- Chỉ được đánh giá:
-  - nền tảng trường thọ hay tổn thọ
-  - yếu tố làm giảm tuổi thọ
-  - yếu tố cứu giải, kéo dài, phục hồi
-  - giai đoạn nào dễ khủng hoảng sức khỏe lớn
+F. PHÂN TÍCH TOÀN BỘ CÁC ĐẠI HẠN (VÒNG ĐỜI 1-90 TUỔI)
+(Phân tích từng chặng 10 năm. Với đại hạn hung hiểm, bắt buộc chỉ ra NĂM NÀO và TUỔI NÀO nguy hiểm nhất).
 
-6. ĐẠI HẠN (VÒNG ĐỜI TỪ 1 ĐẾN 90 TUỔI)
-- Phân tích toàn bộ các đại hạn 10 năm trong vòng đời (từ khi sinh ra đến tối đa 90 tuổi).
-- Đánh giá chi tiết vận trình sức khỏe, bệnh tật và thọ yểu cho từng chặng 10 năm.
-- Xác định rõ các đại hạn hung hiểm nhất về: sinh tử, bệnh nan y, tai nạn thảm khốc.
-- ĐẶC BIỆT: Với mỗi đại hạn được xác định là có rủi ro cao (bệnh nặng, tai nạn, hoặc sinh tử), bắt buộc phải truy tìm và chỉ đích danh NĂM NÀO là năm nguy hiểm nhất trong chặng đó (nêu rõ số tuổi và năm cụ thể).
-- Với mỗi đại hạn quan trọng, nêu:
-  - Khoảng tuổi (ví dụ: 24-33)
-  - Cung hạn
-  - Các bộ sao chủ chốt (hung/cát)
-  - Loại rủi ro chính và mức độ nguy hại
+G. PHÂN TÍCH CHI TIẾT 3 NĂM TRỌNG TÂM: 2025, 2026, 2027
+(Đánh giá rủi ro, nguy cơ bệnh và căn cứ sao/cung cho từng năm).
 
-7. TIỂU HẠN / LƯU NIÊN TRỌNG TÂM
-Hôm nay là năm 2026.
-Phân tích 3 năm:
-- 2025
-- 2026
-- 2027
+H. BẢNG TỔNG HỢP SAO THEN CHỐT
+(Chia 3 nhóm: Hung tinh bệnh | Sao mãn tính | Cát tinh cứu giải).
 
-Với từng năm, bắt buộc nêu:
-- mức độ rủi ro tổng quát: thấp / vừa / cao / rất cao
-- nguy cơ chính về bệnh gì hoặc tai họa gì
-- cung và sao làm căn cứ
-- nếu dữ liệu tháng không đủ thì ghi rõ không đủ dữ liệu để chốt tháng
-
-8. TỔNG HỢP SAO THEN CHỐT
-Tạo 3 nhóm:
-- Hung tinh gây bệnh / tổn thọ / tai nạn
-- Sao báo bệnh mãn tính hoặc suy yếu cơ thể
-- Cát tinh cứu giải / giảm hung
-
-9. KẾT LUẬN CUỐI
-Tóm tắt đúng 5 ý:
-- 1 ý về nền thể chất
-- 1 ý về bệnh tật nổi bật
-- 1 ý về tai nạn / huyết quang
-- 1 ý về đại hạn / tiểu hạn đáng chú ý
-- 1 ý về yếu tố cứu giải
-
-========================
-V. ĐỊNH DẠNG ĐẦU RA
-========================
-
-Bắt buộc trả ra theo cấu trúc sau:
-
-A. Tổng quan nền thể chất
-B. Các dấu hiệu thân thể và bộ phận dễ tổn thương
-C. Các xu hướng bệnh nổi bật
-D. Tai nạn, thương tích, phẫu thuật, huyết quang
-E. Thọ mệnh và yếu tố tổn thọ
-F. Đại hạn quan trọng
-G. Phân tích 2025, 2026, 2027
-H. Bảng tổng hợp sao then chốt
-I. Kết luận 5 ý ngắn gọn
-
-========================
-VI. RÀNG BUỘC CUỐI
-========================
-
-- Không được dùng lời khen mở đầu.
-- Không viết theo phong cách huyền bí sáo rỗng.
-- Không nói chung chung.
-- Không lặp ý.
-- Mỗi kết luận phải gắn với sao và cung.
-- Nếu không đủ dữ liệu thì phải thừa nhận không đủ dữ liệu.
+I. KẾT LUẬN 5 Ý NGẮN GỌN
+(Tóm lược: Thể chất | Bệnh tật | Tai nạn | Hạn đáng chú ý | Cứu giải).
 """
 
         # Danh sách các model tiềm năng
