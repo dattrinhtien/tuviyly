@@ -5,6 +5,10 @@ import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Thiết lập đường dẫn
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -14,7 +18,8 @@ if CURRENT_DIR not in sys.path:
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Lấy API Key với fallback cho tên cũ nếu cần
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY_TUVI_Y_HOC")
 
 class InterpretInput(BaseModel):
     data: dict

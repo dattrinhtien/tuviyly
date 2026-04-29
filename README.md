@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tử Vi Y Học (TuviYly-Web)
 
-## Getting Started
+Ứng dụng luận giải lá số Tử Vi chuyên sâu về khía cạnh Y học, Sức khỏe và Thọ mệnh, tích hợp Trí tuệ nhân tạo Gemini.
 
-First, run the development server:
+## ✨ Tính năng nổi bật
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Lập lá số Tử Vi**: Tự động an sao và lập lá số chính xác dựa trên thông tin ngày giờ sinh.
+- **Phân tích Y học chuyên sâu**: Tập trung vào thể chất bẩm sinh, các nhóm bệnh tiềm tàng qua các cung Mệnh, Thân, Tật Ách.
+- **Luận giải bằng AI**: Sử dụng mô hình Gemini (1.5 Flash/Pro, 2.0 Flash) để phân tích chi tiết từng đại hạn, tiểu hạn và các năm hung họa mạnh nhất.
+- **Thiết kế phong cách Y học cổ điển**: Giao diện mang hơi hướng hàn lâm, chuyên nghiệp với tông màu đỏ trầm và giấy cổ.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Công nghệ sử dụng
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend**: Next.js 15 (App Router), React 19, Tailwind CSS 4.
+- **Backend**: Python FastAPI (chạy dưới dạng Vercel Serverless Functions).
+- **AI**: Google Gemini API.
+- **Font**: Inter & Playfair Display.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Cài đặt và Chạy local
 
-## Learn More
+1. **Clone repository**:
+   ```bash
+   git clone <repository-url>
+   cd tuviyly-web
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Cài đặt dependencies**:
+   ```bash
+   npm install
+   pip install -r api/requirements.txt
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Cấu hình biến môi trường**:
+   Tạo file `.env.local` ở thư mục gốc và thêm API Key:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Chạy server phát triển**:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+5. **Truy cập**: Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📋 Lưu ý quan trọng
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Các kết quả luận giải từ AI chỉ mang tính chất tham khảo học thuật và giải trí theo triết lý Tử Vi cổ điển. Ứng dụng không thay thế các chẩn đoán, tư vấn hoặc điều trị y khoa chuyên nghiệp. Đương số luôn cần tham vấn ý kiến bác sĩ cho các vấn đề sức khỏe thực tế.
+
+---
+Phát triển bởi đội ngũ đam mê Tử Vi & Công nghệ.

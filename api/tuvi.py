@@ -4,6 +4,10 @@ import json
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Thiết lập đường dẫn để import engine
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
