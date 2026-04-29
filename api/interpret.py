@@ -42,6 +42,13 @@ async def interpret_tuvi(input_data: InterpretInput):
         # Xây dựng thông tin các cung
         cung_info = "\n".join([f"Cung {v['chu_cung']} ({v['name']}): {', '.join(v['stars'])}" for k, v in cung_dict.items()])
         
+        # Thiết lập cấu hình chuyên sâu cho AI
+        generation_config = {
+            "temperature": 0.3, # Giảm độ ngẫu nhiên để tăng tính ổn định học thuật
+            "top_p": 0.95,
+            "max_output_tokens": 8192,
+        }
+
         prompt_text = f"""
 Bạn là chuyên gia luận giải lá số Tử Vi theo hướng chuyên sâu về:
 - thân thể
@@ -71,7 +78,8 @@ Nhiệm vụ của bạn là phân tích lá số Tử Vi tôi cung cấp theo �
 - Không dùng ngôn ngữ mê tín hù dọa; phải phân tích như một hệ thống luận đoán cổ điển có logic nội bộ.
 - Không được kết luận tuyệt đối như bác sĩ. Chỉ được nói theo mức độ khả năng, xu hướng mạnh/yếu, nguy cơ cao/thấp.
 
-2. Quy trình phân tích bắt buộc (Hãy đi theo đúng thứ tự sau):
+2. Quy trình phân tích bắt buộc
+Hãy đi theo đúng thứ tự sau:
 
 A. Phân tích nền tảng thân thể bẩm sinh
 - Xem Mệnh, Thân, Tật Ách, Phúc Đức, Điền Trạch, Phụ Mẫu nếu liên quan.
@@ -152,7 +160,7 @@ F. Phân tích sao then chốt
 - Nếu chưa đủ dữ liệu để chắc chắn, phải nói rõ mức độ bất định.
 
 4. Định dạng đầu ra bắt buộc
-Hãy trả lời theo cấu trúc (Markdown):
+Hãy trả lời theo cấu trúc:
 
 I. Tổng quan sức khỏe và thọ mệnh
 II. Các dấu hiệu bệnh tật bẩm sinh
@@ -185,19 +193,20 @@ Cuối bài, cho điểm 10 về các mục:
         try:
             available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
             if available_models:
-                # Đưa các model khả dụng lên đầu danh sách thử nghiệm
+                # Ưu tiên các model khả dụng
                 for am in reversed(available_models):
                     if am not in models_to_try:
                         models_to_try.insert(0, am)
-        except Exception as e:
-            # Nếu không liệt kê được cũng không sao, sẽ dùng danh sách mặc định
+        except:
             pass
 
         errors = []
         for model_name in models_to_try:
             try:
-                # Sử dụng thư viện SDK chính thức với tên model đầy đủ
-                model = genai.GenerativeModel(model_name)
+                model = genai.GenerativeModel(
+                    model_name=model_name,
+                    generation_config=generation_config
+                )
                 response = model.generate_content(prompt_text)
                 
                 if response and response.text:
@@ -207,8 +216,6 @@ Cuối bài, cho điểm 10 về các mục:
             except Exception as e:
                 err_str = str(e)
                 errors.append(f"{model_name}: {err_str}")
-                
-                # Nếu là lỗi hết hạn mức (429), đợi lâu hơn một chút
                 if "429" in err_str:
                     time.sleep(3)
                 else:
