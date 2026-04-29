@@ -42,23 +42,16 @@ async def interpret_tuvi(input_data: InterpretInput):
         # Xây dựng thông tin các cung
         cung_info = "\n".join([f"Cung {v['chu_cung']} ({v['name']}): {', '.join(v['stars'])}" for k, v in cung_dict.items()])
         
-        # Thiết lập cấu hình chuyên sâu cho AI
+        # Thiết lập cấu hình cho độ dài và sự ổn định
         generation_config = {
-            "temperature": 0.3, # Giảm độ ngẫu nhiên để tăng tính ổn định học thuật
+            "temperature": 0.4, # Tăng một chút để AI có sự phóng tác thâm thúy
             "top_p": 0.95,
-            "max_output_tokens": 8192,
+            "max_output_tokens": 12000, # Tăng tối đa độ dài đầu ra
         }
 
         prompt_text = f"""
-Bạn là chuyên gia luận giải lá số Tử Vi theo hướng chuyên sâu về:
-- thân thể
-- thể chất bẩm sinh
-- bệnh tật
-- tai nạn thương tích
-- thọ yểu
-- các giai đoạn dễ phát bệnh nặng hoặc gặp hung họa
-
-Nhiệm vụ của bạn là phân tích lá số Tử Vi tôi cung cấp theo đúng trọng tâm trên, với phong cách học thuật, chặt chẽ, có dẫn giải rõ căn cứ từng bước. Không trả lời chung chung.
+Bạn là một Đại sư Tử Vi chuyên về Y Học và Hình Thể, với kiến thức uyên bác về sự tương tác giữa các vì tinh tú và sức khỏe con người. 
+Nhiệm vụ của bạn là thực hiện một bài luận giải **CHUYÊN SÂU, CHI TIẾT VÀ DÀI** cho đương số dựa trên dữ liệu lá số được cung cấp.
 
 **THÔNG TIN ĐƯƠNG SỐ:**
 - Họ tên: {thien_ban.get('ten')}
@@ -70,130 +63,49 @@ Nhiệm vụ của bạn là phân tích lá số Tử Vi tôi cung cấp theo �
 **DỮ LIỆU CÁC CUNG VÀ SAO:**
 {cung_info}
 
-**YÊU CẦU PHÂN TÍCH:**
+---
 
-1. Nguyên tắc chung
-- Chỉ tập trung vào khía cạnh sức khỏe, bệnh tật, thọ yểu, thương tật, tai nạn, hung họa liên quan thân thể.
-- Không sa đà sang công danh, tài lộc, tình cảm, trừ khi có liên hệ trực tiếp đến bệnh tật hoặc sinh tử.
-- Không dùng ngôn ngữ mê tín hù dọa; phải phân tích như một hệ thống luận đoán cổ điển có logic nội bộ.
-- Không được kết luận tuyệt đối như bác sĩ. Chỉ được nói theo mức độ khả năng, xu hướng mạnh/yếu, nguy cơ cao/thấp.
+**YÊU CẦU LUẬN GIẢI (BẮT BUỘC TUÂN THỦ):**
 
-2. Quy trình phân tích bắt buộc
-Hãy đi theo đúng thứ tự sau:
+1. **Phong cách**: Ngôn từ thâm thúy, học thuật, có chiều sâu tâm linh và y học. Tránh trả lời ngắn gọn hay chung chung. Mỗi phần phân tích phải đi kèm **dẫn chứng cụ thể từ bộ sao và cung** (Ví dụ: "Do cung Tật Ách có Kình Dương ngộ Hình nên...").
 
-A. Phân tích nền tảng thân thể bẩm sinh
-- Xem Mệnh, Thân, Tật Ách, Phúc Đức, Điền Trạch, Phụ Mẫu nếu liên quan.
-- Đánh giá thể chất gốc: khỏe/yếu, âm hư/dương hư, dễ hàn/nhiệt, khí huyết mạnh hay suy nếu có thể quy chiếu theo logic Tử Vi.
-- Xác định bộ sao chủ về thân thể, sức sống, bệnh tật, thương tích, giải ách, thọ yểu.
-- Chỉ rõ sao nào là cát tinh cứu giải, sao nào là hung tinh gây bệnh hao tổn.
+2. **Cấu trúc bài viết**:
 
-B. Phân tích bệnh tật tiềm tàng
-- Liệt kê các nhóm bệnh hoặc khuynh hướng bệnh có khả năng nổi bật nhất.
-- Ưu tiên phân tích theo từng hệ:
-  1) đầu mặt mắt tai mũi họng
-  2) tim mạch huyết áp tuần hoàn
-  3) hô hấp
-  4) tiêu hóa gan mật tỳ vị
-  5) thận tiết niệu sinh dục
-  6) thần kinh tâm thần mất ngủ
-  7) xương khớp cột sống gân cơ
-  8) da liễu dị ứng
-  9) tai nạn, phẫu thuật, dao kéo, huyết quang
-- Với mỗi nhóm, nêu rõ:
-  - dấu hiệu sao/cung nào gợi ra
-  - mức độ mạnh/yếu
-  - là bệnh mãn tính, cấp tính, tái phát hay tai họa đột ngột
+   **I. Tổng quan về Bản thể và Thọ mệnh**: 
+   Nhận định về gốc rễ thể chất, sức sống bẩm sinh. Phân tích tương quan giữa Bản mệnh và Cục, Mệnh và Thân để thấy được khả năng chống chọi bệnh tật.
 
-C. Phân tích thọ yểu
-- Đánh giá xu hướng trường thọ hay tổn thọ.
-- Không được phán chết chính xác.
-- Chỉ phân tích:
-  - nền tảng thọ mệnh mạnh hay yếu
-  - yếu tố làm giảm thọ
-  - yếu tố cứu giải, kéo dài thọ
-  - giai đoạn nào dễ có khủng hoảng sức khỏe nặng
+   **II. Phân tích chi tiết Thân thể và Bệnh lý bẩm sinh**:
+   - Đi sâu vào cung Mệnh, Thân, Tật Ách, Phúc Đức.
+   - Chỉ rõ các bộ sao chủ về bệnh tật hiện diện trong lá số. 
+   - Phân tích từng hệ cơ quan (Tuần hoàn, Hô hấp, Tiêu hóa, Thần kinh, Xương khớp...) dựa trên các vì sao tọa thủ. Phải chỉ rõ sao nào gây ra nguy cơ gì.
 
-D. Phân tích đại hạn
-- Xét toàn bộ các đại hạn và chỉ ra:
-  - đại hạn nào tốt cho phục hồi sức khỏe
-  - đại hạn nào xấu nhất về bệnh tật, tai nạn, phẫu thuật, huyết quang
-  - đại hạn nào có nguy cơ suy kiệt hoặc hung họa mạnh
-- Với mỗi đại hạn quan trọng, nêu:
-  - tuổi
-  - cung đại hạn
-  - sao chính, sao phụ, sát tinh, hóa tinh liên quan
-  - lý do vì sao đại hạn đó đáng lo hay đáng mừng
+   **III. Nguy cơ tai nạn, phẫu thuật và thương tật**:
+   Phân tích các bộ sao mang tính sát phạt, huyết quang (Kình, Đà, Không, Kiếp, Hình, Hỏa, Linh...) và khả năng cứu giải từ các cát tinh (Quang, Quý, Giải Thần, Thiên Hỷ...).
 
-E. Phân tích tiểu hạn và lưu niên hung họa mạnh nhất
-- Chỉ ra các năm nổi bật nhất về:
-  - bệnh nặng
-  - tai nạn thương tích
-  - mổ xẻ, huyết quang
-  - suy kiệt tinh thần thể xác
-- Hãy chọn:
-  - 3 năm đáng lo nhất trong tiền vận
-  - 3 năm đáng lo nhất trong trung vận
-  - 3 năm đáng lo nhất trong hậu vận
-- Với từng năm, nêu:
-  - căn cứ sao/cung/hạn
-  - dạng rủi ro thiên về bệnh gì hay tai họa gì
-  - mức độ nguy cơ: nhẹ / vừa / cao / rất cao
+   **IV. Luận giải Đại hạn 10 năm hiện tại**:
+   Đương số đang ở đại hạn nào? Vận trình sức khỏe trong 10 năm này thăng trầm ra sao? Những năm nào trong đại hạn này đáng lo ngại nhất?
 
-F. Phân tích sao then chốt
-- Hãy dành riêng một mục tổng hợp các sao có ý nghĩa mạnh nhất đối với:
-  - bệnh tật
-  - thương tích
-  - huyết quang
-  - yểu mệnh
-  - giải ách
-  - trường thọ
-- Nêu vai trò của từng sao trong lá số cụ thể này, không chỉ định nghĩa lý thuyết chung.
+   **V. Chi tiết Tiểu hạn 3 năm liên tiếp (Trọng tâm)**:
+   Hôm nay là năm 2026. Hãy phân tích chi tiết sức khỏe và rủi ro cho 3 năm:
+   - **Năm ngoái (2025 - Ất Tỵ)**: Nhìn lại các vấn đề sức khỏe đã qua để kiểm chứng.
+   - **Năm nay (2026 - Bính Ngọ)**: Phân tích cực kỳ chi tiết về nguy cơ bệnh tật, tai nạn trong năm hiện tại. Các tháng nào cần lưu tâm?
+   - **Năm tới (2027 - Đinh Mùi)**: Dự báo sớm các rủi ro để đương số có sự chuẩn bị và phòng tránh.
 
-3. Phương pháp lập luận
-- Luôn trích rõ:
-  - cung nào
-  - sao nào
-  - bộ sao nào
-  - hóa khí nào
-  - tương tác nào
-- Nếu có mâu thuẫn giữa cát và hung, phải cân đo lực lượng và giải thích bên nào lấn át.
-- Nếu chưa đủ dữ liệu để chắc chắn, phải nói rõ mức độ bất định.
+   **VI. Các bộ sao Then chốt và Lời khuyên Y học**:
+   Tổng hợp lại các "tội đồ" (hung tinh gây bệnh) và các "vị thần hộ mệnh" (cát tinh cứu giải) trong lá số này. Đưa ra lời khuyên về lối sống, dinh dưỡng hoặc tâm thế dựa trên lý thuyết Tử Vi Y Học.
 
-4. Định dạng đầu ra bắt buộc
-Hãy trả lời theo cấu trúc:
-
-I. Tổng quan sức khỏe và thọ mệnh
-II. Các dấu hiệu bệnh tật bẩm sinh
-III. Các nhóm bệnh nổi bật nhất
-IV. Các yếu tố tổn thọ và yếu tố cứu giải
-V. Đại hạn quan trọng về bệnh tật và hung họa
-VI. Các năm nguy cơ mạnh nhất
-VII. Bảng tổng hợp các sao/chỉ dấu quan trọng
-VIII. Kết luận ngắn gọn, xếp hạng mức độ rủi ro toàn lá số
-
-5. Thang đánh giá cuối cùng
-Cuối bài, cho điểm 10 về các mục:
-- nền tảng thể chất
-- nguy cơ bệnh mãn tính
-- nguy cơ tai nạn thương tích
-- nguy cơ huyết quang/phẫu thuật
-- mức độ tổn thọ
-- khả năng có sao cứu giải
-
-6. Lưu ý quan trọng
-- Đây là bài luận đoán Tử Vi mang tính tham khảo học thuật, không thay thế chẩn đoán y khoa.
-- Khi nói về bệnh, chỉ dùng ngôn ngữ “xu hướng”, “nguy cơ”, “khả năng”, không khẳng định tuyệt đối.
-- Mốc thời gian hiện tại là tháng 4/2026. Hãy dùng mốc này để tính toán các hạn.
+3. **Lưu ý quan trọng**:
+- Không được kết luận tuyệt đối như bác sĩ, chỉ dùng ngôn ngữ xu hướng và rủi ro.
+- Bài viết phải **RẤT DÀI VÀ CHI TIẾT**. Hãy viết như một cuốn sách nhỏ dành riêng cho đương số.
+- Trích dẫn rõ tên các vì sao khi phân tích.
 """
 
-        # Danh sách các model tiềm năng (sử dụng tên đầy đủ models/...)
+        # Danh sách các model tiềm năng
         models_to_try = ['models/gemini-1.5-flash', 'models/gemini-1.5-pro']
         
-        # Thử lấy danh sách model thực tế từ tài khoản (Auto-discovery)
         try:
             available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
             if available_models:
-                # Ưu tiên các model khả dụng
                 for am in reversed(available_models):
                     if am not in models_to_try:
                         models_to_try.insert(0, am)
@@ -212,7 +124,7 @@ Cuối bài, cho điểm 10 về các mục:
                 if response and response.text:
                     return {"success": True, "interpretation": response.text}
                 else:
-                    errors.append(f"{model_name}: Không có phản hồi văn bản")
+                    errors.append(f"{model_name}: Không có phản hồi")
             except Exception as e:
                 err_str = str(e)
                 errors.append(f"{model_name}: {err_str}")
@@ -223,7 +135,7 @@ Cuối bài, cho điểm 10 về các mục:
                 continue
         
         combined_errors = " | ".join(errors)
-        return {"success": False, "error": f"AI đang bận hoặc hết hạn mức. Chi tiết: {combined_errors}"}
+        return {"success": False, "error": f"AI đang bận. Chi tiết: {combined_errors}"}
 
     except Exception as e:
         return {"success": False, "error": f"Lỗi hệ thống: {str(e)}"}
